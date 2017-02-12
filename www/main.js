@@ -1,21 +1,30 @@
-const AUSTEN = `
-It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.
-  However little known the feelings or views of such a man may be on his first entering a neighbourhood, this truth is so well fixed in the minds of the surrounding families, that he is considered the rightful property of some one or other of their daughters.
-  “My dear Mr. Bennet,” said his lady to him one day, “have you heard that Netherfield Park is let at last?”
-Mr. Bennet replied that he had not.
-  “But it is,” returned she; “for Mrs. Long has just been here, and she told me all about it.”
-Mr. Bennet made no answer.
-  “Do you not want to know who has taken it?” cried his wife impatiently.
-  “You want to tell me, and I have no objection to hearing it.”
-This was invitation enough.
-  “Why, my dear, you must know, Mrs. Long says that Netherfield is taken by a young man of large fortune from the north of England; that he came down on Monday in a chaise and four to see the place, and was so much delighted with it, that he agreed with Mr. Morris immediately; that he is to take possession before Michaelmas, and some of his servants are to be in the house by the end of next week.”
-`
-
 function main() {
-  let meSpeakLoadPromise = loadMeSpeak()
-  meSpeakLoadPromise.then(() => {
-    let waveMaker = new WaveMaker()
-    waveMaker.generateWavesForText({text: AUSTEN})
+  let inputForm = document.getElementById('inputForm')
+  let makeWavesBtn = document.getElementById('makeWavesBtn')
+  let textInput = document.getElementById('textInput')
+  let loadingMsgContainer = document.getElementById('loadingMsgContainer')
+  let wavesRowContainer = document.getElementById('wavesRowContainer')
+  let waveMaker = new WaveMaker({container: wavesRowContainer})
+
+  // From file.
+  textInput.value = SOUND_OF_WAVES_CHAPTER_1
+
+  $(inputForm).fadeIn()
+
+  loadMeSpeak().then(() => {
+    makeWavesBtn.removeAttribute('disabled')
+    makeWavesBtn.addEventListener('click', () => {
+      let text = textInput.value
+      $(inputForm).fadeOut().promise().then(() => {
+        return $(loadingMsgContainer).fadeIn().promise()
+      }).then(() => {
+        return waveMaker.generateWavesForText({text: textInput.value})
+      }).then(() => {
+        return $(loadingMsgContainer).fadeOut().promise()
+      }).then(() => {
+        return $(wavesRowContainer).fadeIn()
+      })
+    })
   })
 }
 
@@ -56,12 +65,13 @@ class WaveMaker {
   }
 
   generateWavesForText({text}) {
+    let wavePromises = []
     let passages = this.extractPassagesFromText({text})
-    // @TODO RESTORE!
-    //for (let passage of passages) {
-    for (let passage of passages.slice(0, 2)) {
-      this.generateWaveRowForPassage({passage})
+    for (let passage of passages) {
+      let wavePromise = this.generateWaveRowForPassage({passage})
+      wavePromises.push(wavePromise)
     }
+    return Promise.all(wavePromises)
   }
 
   extractPassagesFromText({text}) {
@@ -73,26 +83,33 @@ class WaveMaker {
   }
 
   generateWaveRowForPassage({passage}) {
-    let waveRow = document.createElement('div')
-    waveRow.setAttribute('class', 'row wave-row')
-    this.container.appendChild(waveRow)
+    let wavePromise = new Promise((resolve, reject) => {
+      let waveRow = document.createElement('div')
+      waveRow.setAttribute('class', 'row wave-row')
+      this.container.appendChild(waveRow)
 
-    let summaryContainer = document.createElement('div')
-    summaryContainer.setAttribute('class', 'summary-container col-xs-4')
-    waveRow.appendChild(summaryContainer)
-    let summary = this.generateSummaryForPassage({passage})
-    summaryContainer.appendChild(summary)
+      let summaryContainer = document.createElement('div')
+      summaryContainer.setAttribute('class', 'summary-container col-xs-4')
+      waveRow.appendChild(summaryContainer)
+      let summary = this.generateSummaryForPassage({passage})
+      summaryContainer.appendChild(summary)
 
-    let waveContainer = document.createElement('div')
-    waveContainer.setAttribute('class', 'wave-container col-xs-8')
-    waveRow.appendChild(waveContainer)
-    let wave = this.generateWaveForPassage({passage})
-    waveContainer.appendChild(wave)
+      let waveContainer = document.createElement('div')
+      waveContainer.setAttribute('class', 'wave-container col-xs-8')
+      waveRow.appendChild(waveContainer)
+      let wave = this.generateWaveForPassage({passage})
+      waveContainer.appendChild(wave)
+      resolve()
+    })
+    return wavePromise
   }
 
   generateSummaryForPassage({passage}) {
     let summary = document.createElement('div')
-    summary.innerHTML = passage
+    let elidedText = document.createElement('div')
+    elidedText.classList.add('truncate')
+    elidedText.innerHTML = passage
+    summary.appendChild(elidedText)
     return summary
   }
 
@@ -122,6 +139,7 @@ class WaveMaker {
       container,
       pixelRatio: 1,
       fillParent: false,
+      cursorColor: 'rgba(0, 0, 0, .1)',
     })
     surfer.loadDecodedBuffer(audioBuffer)
     return container

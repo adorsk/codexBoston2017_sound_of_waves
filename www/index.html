@@ -24,20 +24,30 @@
             <div class="jumbotron">
                 <div class="container">
                     <h1>The Sound of Waves</h1>
-                    <p>...</p>
+                    <p>Visualize the Rhythms of Text</p>
                 </div>
             </div>
 
             <div id="main" class="container">
-                <div class="row">
+                <div id="inputForm" class="row" style="display: none;">
+                    <div class="col-xs-12">
+                        <textarea id="textInput" class="form-control" rows="10">
+                        </textarea>
+                        <br>
+                        <button id="makeWavesBtn" class="btn btn-default" disabled=True>make some waves!</button>
+                    </div>
                 </div>
-
-                <hr>
-
-                <footer>
-                </footer>
+                <div id="loadingMsgContainer" class="col-xs-12" style="display: none;">
+                    <div>Loading...the waves are coming...</div>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped active" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div id="waveRowsContainer" class="col-xs-12">
+                </div>
             </div> <!-- /container -->
 
+            <script src="./sound_of_waves_chapter_1.js"></script>
             <script src="./jquery.min.js"></script>
             <script src="./bootstrap.min.js"></script>
             <script src="//cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.0.52/wavesurfer.min.js"></script>

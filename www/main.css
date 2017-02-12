@@ -7,4 +7,24 @@ body {
 .jumbotron {
   padding-top: 1em;
   padding-bottom: 1em;
+  text-align: center;
+}
+
+#inputForm {
+  text-align: center;
+}
+
+#textInput {
+  margin: .5em;
+}
+
+#loadingMsgContainer {
+  text-align: center;
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 1.5em;
 }
