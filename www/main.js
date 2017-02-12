@@ -67,8 +67,7 @@ class WaveMaker {
   generateWavesForText({text}) {
     let wavePromises = []
     let passages = this.extractPassagesFromText({text})
-    //for (let passage of passages) {
-    for (let passage of passages.slice(0, 2)) {
+    for (let passage of passages) {
       let wavePromise = this.generateWaveRowForPassage({passage})
       wavePromises.push(wavePromise)
     }
