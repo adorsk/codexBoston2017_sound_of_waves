@@ -1,57 +1,57 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <head>
-            <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon"> 
-            <meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="en">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-            <title>The Sound of Waves</title>
+        <title>The Sound of Waves</title>
 
-            <link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
-            <link href="./main.css" rel="stylesheet">
-        </head>
+        <link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="./main.css" rel="stylesheet">
+    </head>
 
-        <body>
-            <nav class="navbar navbar-inverse navbar-fixed-top">
-                <div class="container">
-                    <div class="navbar-header">
-                        <div id="navbar" class="navbar-collapse collapse">
-                        </div><!--/.navbar-collapse -->
-                    </div>
-                </div>
-            </nav>
-
-            <!-- Main jumbotron for a primary marketing message or call to action -->
-            <div class="jumbotron">
-                <div class="container">
-                    <h1>The Sound of Waves</h1>
-                    <p>Visualize the Rhythms of Text</p>
-                    <p><a href="https://github.com/adorsk/codexBoston2017_sound_of_waves" target="_blank">Learn About This Project</a></p>
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <div id="navbar" class="navbar-collapse collapse">
+                    </div><!--/.navbar-collapse -->
                 </div>
             </div>
+        </nav>
 
-            <div id="main" class="container">
-                <div id="inputForm" class="row" style="display: none;">
-                    <div class="col-xs-12">
-                        <textarea id="textInput" class="form-control" rows="10">
-                        </textarea>
-                        <br>
-                        <button id="makeWavesBtn" class="btn btn-default" disabled=True>make some waves!</button>
-                    </div>
-                </div>
-                <div id="loadingMsgContainer" class="col-xs-12" style="display: none;">
-                    <div>Loading...the waves are coming...</div>
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-striped active" style="width: 100%"></div>
-                    </div>
-                </div>
-                <table id="waveRowsContainer" class="col-xs-12"></table>
-            </div> <!-- /container -->
+        <!-- Main jumbotron for a primary marketing message or call to action -->
+        <div class="jumbotron">
+            <div class="container">
+                <h1>The Sound of Waves</h1>
+                <p>Visualize the Rhythms of Text</p>
+                <p><a href="https://github.com/adorsk/codexBoston2017_sound_of_waves" target="_blank">Learn About This Project</a></p>
+            </div>
+        </div>
 
-            <script src="./sound_of_waves_chapter_1.js"></script>
-            <script src="./jquery.min.js"></script>
-            <script src="./bootstrap/js/bootstrap.min.js"></script>
-            <script src="//cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.0.52/wavesurfer.min.js"></script>
-            <script src="mespeak/mespeak.js"></script>
-            <script src="./main.js"></script>
-        </body>
-    </html>
+        <div id="main" class="container">
+            <div id="inputForm" class="row" style="display: none;">
+                <div class="col-xs-12">
+                    <textarea id="textInput" class="form-control" rows="10">
+                    </textarea>
+                    <br>
+                    <button id="makeWavesBtn" class="btn btn-default" disabled=True>make some waves!</button>
+                </div>
+            </div>
+            <div id="loadingMsgContainer" class="col-xs-12" style="display: none;">
+                <div>Loading...the waves are coming...</div>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped active" style="width: 100%"></div>
+                </div>
+            </div>
+            <table id="waveRowsContainer" class="col-xs-12"></table>
+        </div> <!-- /container -->
+
+        <script src="./sound_of_waves_chapter_1.js"></script>
+        <script src="./jquery.min.js"></script>
+        <script src="./bootstrap/js/bootstrap.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.0.52/wavesurfer.min.js"></script>
+        <script src="mespeak/mespeak.js"></script>
+        <script src="./main.js"></script>
+    </body>
+</html>
