@@ -12,27 +12,54 @@ This was invitation enough.
 `
 
 function main() {
-  let waveMaker = new WaveMaker()
-  waveMaker.generateWavesForText({text: AUSTEN})
+  let meSpeakLoadPromise = loadMeSpeak()
+  meSpeakLoadPromise.then(() => {
+    let waveMaker = new WaveMaker()
+    waveMaker.generateWavesForText({text: AUSTEN})
+  })
+}
+
+function loadMeSpeak() {
+  let meSpeakPromise = new Promise((resolve, reject) => {
+    meSpeak.loadConfig('mespeak/mespeak_config.json')
+    let cfgPromise = new Promise((resolveCfg, rejectCfg) => {
+      function checkCfg () {
+        if (meSpeak.isConfigLoaded()) {
+          resolveCfg()
+        } else {
+          setTimeout(checkCfg, 200)
+        }
+      }
+      checkCfg()
+    })
+    let voicePromise = new Promise((resolveVoice, rejectVoice) => {
+      meSpeak.loadVoice('mespeak/voices/en/en-us.json', resolveVoice)
+    })
+    resolve(Promise.all([cfgPromise, voicePromise]))
+  })
+  return meSpeakPromise
 }
 
 class WaveMaker {
   constructor(kwargs) {
     kwargs = kwargs || {}
-    let {containerEl} = kwargs
-    this.containerEl = containerEl || this.generateDefaultContainerEl()
+    let {container} = kwargs
+    this.container = container || this.generateDefaultContainer()
+    this.audioCtx = new AudioContext()
   }
 
-  generateDefaultContainerEl() {
-    let containerEl = document.createElement('div')
-    containerEl.setAttribute('id', 'wave-maker')
-    document.body.appendChild(containerEl)
-    return containerEl
+  generateDefaultContainer() {
+    let container = document.createElement('div')
+    container.setAttribute('id', 'wave-maker')
+    document.getElementById('main').appendChild(container)
+    return container
   }
 
   generateWavesForText({text}) {
     let passages = this.extractPassagesFromText({text})
-    for (let passage of passages) {
+    // @TODO RESTORE!
+    //for (let passage of passages) {
+    for (let passage of passages.slice(0, 2)) {
       this.generateWaveRowForPassage({passage})
     }
   }
@@ -46,25 +73,63 @@ class WaveMaker {
   }
 
   generateWaveRowForPassage({passage}) {
-    let waveRowEl = document.createElement('div')
-    waveRowEl.setAttribute('class', 'wave-row')
-    this.containerEl.appendChild(waveRowEl)
-    let summaryEl = this.generateSummaryElForPassage({passage})
-    waveRowEl.appendChild(summaryEl)
-    let waveEl = this.generateWaveElForPassage({passage})
-    waveRowEl.appendChild(waveEl)
+    let waveRow = document.createElement('div')
+    waveRow.setAttribute('class', 'row wave-row')
+    this.container.appendChild(waveRow)
+
+    let summaryContainer = document.createElement('div')
+    summaryContainer.setAttribute('class', 'summary-container col-xs-4')
+    waveRow.appendChild(summaryContainer)
+    let summary = this.generateSummaryForPassage({passage})
+    summaryContainer.appendChild(summary)
+
+    let waveContainer = document.createElement('div')
+    waveContainer.setAttribute('class', 'wave-container col-xs-8')
+    waveRow.appendChild(waveContainer)
+    let wave = this.generateWaveForPassage({passage})
+    waveContainer.appendChild(wave)
   }
 
-  generateSummaryElForPassage({passage}) {
-    let summaryEl = document.createElement('div')
-    summaryEl.innerHTML = passage
-    return summaryEl
+  generateSummaryForPassage({passage}) {
+    let summary = document.createElement('div')
+    summary.innerHTML = passage
+    return summary
   }
 
-  generateWaveElForPassage({passage}) {
-    let waveEl = document.createElement('div')
-    waveEl.innerHTML = 'wave'
-    return waveEl
+  generateWaveForPassage({passage}) {
+    let wave = document.createElement('div')
+    this.loadAudioBufferForPassage({passage}).then((audioBuffer) => {
+      let surfer = this.generateSurferForAudioBuffer({audioBuffer})
+      wave.appendChild(surfer)
+    })
+    return wave
+  }
+
+  loadAudioBufferForPassage({passage}) {
+    let audioBufferPromise = new Promise((resolve, reject) => {
+      let rawData = meSpeak.speak(passage, {rawdata: 'arrayBuf'})
+      this.audioCtx.decodeAudioData(rawData, (audioBuffer) => {
+        resolve(audioBuffer)
+      })
+    })
+    return audioBufferPromise
+  }
+
+  generateSurferForAudioBuffer({audioBuffer, container}) {
+    container = container || this.generateSurferContainer()
+    let surfer = WaveSurfer.create({
+      audioContext: this.audioCtx,
+      container,
+      pixelRatio: 1,
+      fillParent: false,
+    })
+    surfer.loadDecodedBuffer(audioBuffer)
+    return container
+  }
+
+  generateSurferContainer() {
+    let surfer = document.createElement('div')
+    return surfer
   }
 }
 
