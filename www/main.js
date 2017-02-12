@@ -5,24 +5,53 @@ function main() {
   let loadingMsgContainer = document.getElementById('loadingMsgContainer')
   let wavesRowContainer = document.getElementById('waveRowsContainer')
   let waveMaker = new WaveMaker({container: wavesRowContainer})
+  let navBar = document.getElementById('nav')
+
+
+  function renderTextLauncher({label, text}) {
+    let textLauncher = document.createElement('button')
+    textLauncher.innerHTML = label
+    textLauncher.classList.add('btn', 'btn-xs')
+    return textLauncher
+  }
 
   // From file.
   textInput.value = SOUND_OF_WAVES_CHAPTER_1
 
   $(inputForm).fadeIn()
 
+  function makeWaves({text}) {
+    wavesRowContainer.innerHTML = ''
+    let promise = $(inputForm).fadeOut().promise().then(() => {
+      return $(loadingMsgContainer).fadeIn().promise()
+    }).then(() => {
+      return waveMaker.generateWavesForText({text: text})
+    }).then(() => {
+      return $(loadingMsgContainer).fadeOut().promise()
+    }).then(() => {
+      return $(wavesRowContainer).fadeIn()
+    })
+    return promise
+  }
+
+  for (let textKey of Object.keys(TEXTS)) {
+    let text = TEXTS[textKey]
+    let textLauncher = renderTextLauncher({
+      label: textKey,
+      text,
+    })
+    navBar.appendChild(textLauncher)
+    textLauncher.addEventListener('click', () => {
+      makeWaves({text})
+    })
+  }
+
   loadMeSpeak().then(() => {
     makeWavesBtn.removeAttribute('disabled')
     makeWavesBtn.addEventListener('click', () => {
       let text = textInput.value
       $(inputForm).fadeOut().promise().then(() => {
-        return $(loadingMsgContainer).fadeIn().promise()
-      }).then(() => {
-        return waveMaker.generateWavesForText({text: textInput.value})
-      }).then(() => {
-        return $(loadingMsgContainer).fadeOut().promise()
-      }).then(() => {
-        return $(wavesRowContainer).fadeIn()
+        return makeWaves({text})
       })
     })
   })
@@ -137,15 +166,18 @@ class WaveMaker {
 
   generateSurferForAudioBuffer({audioBuffer, container}) {
     container = container || this.generateSurferContainer()
+    let rgbArgs = '6,66,115'
+    let rgb = `rgb(${rgbArgs})`
+    let rgba = `rgba(${rgbArgs}, .1)`
     let surfer = WaveSurfer.create({
       audioContext: this.audioCtx,
       container,
       height: 80,
       pixelRatio: 1,
-      progressColor: '#555',
-      waveColor: '#555',
+      progressColor: rgb,
+      waveColor: rgb,
       fillParent: false,
-      cursorColor: 'rgba(0, 0, 0, .1)',
+      cursorColor: rgba,
     })
     surfer.loadDecodedBuffer(audioBuffer)
     let controls = this.generateControlsForSurfer({surfer})
