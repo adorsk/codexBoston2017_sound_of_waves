@@ -3,7 +3,7 @@ function main() {
   let makeWavesBtn = document.getElementById('makeWavesBtn')
   let textInput = document.getElementById('textInput')
   let loadingMsgContainer = document.getElementById('loadingMsgContainer')
-  let wavesRowContainer = document.getElementById('wavesRowContainer')
+  let wavesRowContainer = document.getElementById('waveRowsContainer')
   let waveMaker = new WaveMaker({container: wavesRowContainer})
 
   // From file.
@@ -67,7 +67,8 @@ class WaveMaker {
   generateWavesForText({text}) {
     let wavePromises = []
     let passages = this.extractPassagesFromText({text})
-    for (let passage of passages) {
+    //for (let passage of passages) {
+    for (let passage of passages.slice(0, 2)) {
       let wavePromise = this.generateWaveRowForPassage({passage})
       wavePromises.push(wavePromise)
     }
@@ -84,18 +85,18 @@ class WaveMaker {
 
   generateWaveRowForPassage({passage}) {
     let wavePromise = new Promise((resolve, reject) => {
-      let waveRow = document.createElement('div')
-      waveRow.setAttribute('class', 'row wave-row')
+      let waveRow = document.createElement('tr')
+      waveRow.setAttribute('class', 'wave-row')
       this.container.appendChild(waveRow)
 
-      let summaryContainer = document.createElement('div')
-      summaryContainer.setAttribute('class', 'summary-container col-xs-4')
+      let summaryContainer = document.createElement('td')
+      summaryContainer.setAttribute('class', 'summary-cell')
       waveRow.appendChild(summaryContainer)
       let summary = this.generateSummaryForPassage({passage})
       summaryContainer.appendChild(summary)
 
-      let waveContainer = document.createElement('div')
-      waveContainer.setAttribute('class', 'wave-container col-xs-8')
+      let waveContainer = document.createElement('td')
+      waveContainer.setAttribute('class', 'wave-cell')
       waveRow.appendChild(waveContainer)
       let wave = this.generateWaveForPassage({passage})
       waveContainer.appendChild(wave)
@@ -107,7 +108,7 @@ class WaveMaker {
   generateSummaryForPassage({passage}) {
     let summary = document.createElement('div')
     let elidedText = document.createElement('div')
-    elidedText.classList.add('truncate')
+    elidedText.classList.add('scroll-x')
     elidedText.innerHTML = passage
     summary.appendChild(elidedText)
     return summary
@@ -116,8 +117,11 @@ class WaveMaker {
   generateWaveForPassage({passage}) {
     let wave = document.createElement('div')
     this.loadAudioBufferForPassage({passage}).then((audioBuffer) => {
-      let surfer = this.generateSurferForAudioBuffer({audioBuffer})
-      wave.appendChild(surfer)
+      let {surfer, controls, container} = this.generateSurferForAudioBuffer({
+        audioBuffer
+      })
+      wave.appendChild(controls)
+      wave.appendChild(container)
     })
     return wave
   }
@@ -137,17 +141,41 @@ class WaveMaker {
     let surfer = WaveSurfer.create({
       audioContext: this.audioCtx,
       container,
+      height: 80,
       pixelRatio: 1,
+      progressColor: '#555',
+      waveColor: '#555',
       fillParent: false,
       cursorColor: 'rgba(0, 0, 0, .1)',
     })
     surfer.loadDecodedBuffer(audioBuffer)
-    return container
+    let controls = this.generateControlsForSurfer({surfer})
+    return {surfer, controls, container}
   }
 
   generateSurferContainer() {
     let surfer = document.createElement('div')
     return surfer
+  }
+
+  generateControlsForSurfer({surfer}) {
+    let controls = document.createElement('div')
+    controls.classList.add('surfer-controls')
+    let playBtn = document.createElement('button')
+    controls.appendChild(playBtn)
+    let playBtnLabel = document.createElement('span')
+    playBtnLabel.classList.add('glyphicon', 'glyphicon-play')
+    playBtn.appendChild(playBtnLabel)
+    playBtn.addEventListener('click', () => {
+      playBtnLabel.classList.toggle('glyphicon-play')
+      playBtnLabel.classList.toggle('glyphicon-pause')
+      surfer.playPause()
+    })
+    surfer.on('finish', () => {
+      playBtnLabel.classList.remove('glyphicon-pause')
+      playBtnLabel.classList.add('glyphicon-play')
+    })
+    return controls
   }
 }
 

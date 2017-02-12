@@ -22,9 +22,25 @@ body {
   text-align: center;
 }
 
-.truncate {
+.scroll-x {
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-right: 1.5em;
+  overflow-y: hidden; 
+  overflow-x: scroll; 
+  height: 2.5em;
+  color: gray;
+}
+
+#waveRowsContainer {
+  table-layout: fixed
+}
+
+#waveRowsContainer .wave-row td { 
+  padding: .5em;
+}
+
+#waveRowsContainer .wave-row td:nth-child(1) {
+  width: 33%;
+}
+#waveRowsContainer .wave-row td:nth-child(2) {
+  width: 66%;
 }
