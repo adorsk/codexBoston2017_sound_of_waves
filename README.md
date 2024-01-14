@@ -2,7 +2,7 @@
 The Sound of Waves, part of CodexBoston2017. 
 
 ## Why
-I'm interested in how different authors sound. Why does Hemmingway sound different from Faulkner? What makes them sound different I wanted a tool to help me explore the rhythm of a text, so I built this app.
+I'm interested in how different authors sound. Why does Hemingway sound different from Faulkner? What makes them sound different? I wanted a tool to help me explore the rhythm of a text, so I built this app.
 
 ## The Title
 The title comes from one of my favorite books, Yushio Mishima's <i>Sound of Waves</i>, a book with beautiful rhythms.
